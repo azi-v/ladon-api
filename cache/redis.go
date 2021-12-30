@@ -5,12 +5,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var rdb *redis.Client
+var RDB *redis.Client
 
-func Conn(cfg *config.CacheConfig) {
-	rdb =redis.NewClient(&redis.Options{
-		Addr:"",
-		Password: "",
-		DB:0,
+func Conn(cfg *config.RedisConfig) {
+	RDB = redis.NewClient(&redis.Options{
+		Addr:     cfg.Addr,
+		Password: cfg.Password,
+		DB:       int(cfg.DB),
+		PoolSize: int(cfg.Poolsize),
 	})
 }

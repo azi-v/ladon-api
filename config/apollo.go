@@ -37,18 +37,33 @@ func InitApolloConfig(ctx context.Context) *ApolloConfig {
 
 type ApolloConfig struct {
 	LogConfig   *LogConfig
-	CacheConfig *CacheConfig
-	DBConfig    *DBConfig
+	CacheConfig *RedisConfig
+	DBConfig    *MongoConfig
 }
 
 type LogConfig struct {
 }
 
-type CacheConfig struct {
+type RedisConfig struct {
+	Addr     string `json:"addr,omitempty"`
+	Password string `json:"password,omitempty"`
+	DB       int32  `json:"db,omitempty"`
+	Poolsize int32  `json:"poolsize,omitempty"`
 }
+
+
 
 type MongoConfig struct {
+	User        string `json:"user,omitempty"`
+	Password    string `json:"password,omitempty"`
+	Host        string `json:"host,omitempty"`
+	Port        int32  `json:"port,omitempty"`
+	MaxPoolSize int32  `json:"max_pool_size,omitempty"`
+	W           string `json:"w,omitempty"`
 }
 
-type DBConfig struct {
+func (mc *MongoConfig) GetURI() string {
+	return fmt.Sprintf("mongodb://%s:%s@%s:%d/?maxPoolSize=%d&w=%s", mc.User, mc.Password, mc.Host, mc.Port, mc.MaxPoolSize, mc.W)
 }
+
+
