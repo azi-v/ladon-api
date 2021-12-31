@@ -196,8 +196,67 @@ func (m *DBManager) GetAll(limit, offset int64) (ladon.Policies, error) {
 // a set that exactly matches the request, or a superset of it. If an error occurs, it returns nil and
 // the error.
 func (m *DBManager) FindRequestCandidates(r *ladon.Request) (ladon.Policies, error) {
-	
-	return nil, nil
+	policies := ladon.Policies{}
+
+	filter := bson.D{
+		{Key: "subject", Value: r.Subject},
+	}
+	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-subject")
+	cursor, err := coll.Find(m.Ctx, filter)
+	if err != nil {
+		// TODO: 这里的事务问题
+		return nil, err
+	}
+
+	allSubject := make([]DB.CollSubject, 0)
+	err = cursor.All(m.Ctx, &allSubject)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range allSubject {
+		filter := bson.M{"policy_id": v.PolicyID}
+		p := &ladon.DefaultPolicy{}
+
+		err := coll.FindOne(m.Ctx, filter).Decode(p)
+		if err != nil {
+			return nil, err
+		}
+
+		policies = append(policies, p)
+	}
+
+	filter = bson.D{
+		{Key: "resource", Value: r.Resource},
+	}
+	coll = m.DB.Database("ymt-usercenter").Collection("ymt-ladon-resources")
+	cursor, err = coll.Find(m.Ctx, filter)
+	if err != nil {
+		// TODO: 这里的事务问题
+		return nil, err
+	}
+
+	allResource := make([]DB.CollResources, 0)
+	err = cursor.All(m.Ctx, &allResource)
+	if err != nil {
+		return nil, err
+	}
+
+	coll = m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
+
+	for _, v := range allResource {
+		filter := bson.M{"policy_id": v.PolicyID}
+		p := &ladon.DefaultPolicy{}
+
+		err := coll.FindOne(m.Ctx, filter).Decode(p)
+		if err != nil {
+			return nil, err
+		}
+
+		policies = append(policies, p)
+	}
+
+	return policies, nil
 }
 
 // FindPoliciesForSubject returns policies that could match the subject. It either returns
