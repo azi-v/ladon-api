@@ -179,7 +179,7 @@ func (m *DBManager) GetAll(limit, offset int64) (ladon.Policies, error) {
 		return nil, err
 	}
 
-	var pols []*DefaultPolicy
+	var pols []*ladon.DefaultPolicy
 	if err := cursor.All(m.Ctx, &pols); err != nil {
 		return nil, err
 	}
