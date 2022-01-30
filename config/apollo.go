@@ -12,7 +12,7 @@ import (
 
 func InitApolloConfig(ctx context.Context) *ApolloConfig {
 	// 获取env apollo的token等
-	res, err := http.Get("http://dev-apollo-proxy.ymt.io/configs/gogodog/default/application?&token=LRvFPj91aYPgsMcfJJxZl6blbKm9ADGW")
+	res, err := http.Get("")
 	if err != nil {
 		log.Fatal(ctx, err)
 	}
@@ -42,6 +42,8 @@ type ApolloConfig struct {
 }
 
 type LogConfig struct {
+	FilePath       string
+	WriteFileLevel uint32
 }
 
 type RedisConfig struct {
@@ -50,8 +52,6 @@ type RedisConfig struct {
 	DB       int32  `json:"db,omitempty"`
 	Poolsize int32  `json:"poolsize,omitempty"`
 }
-
-
 
 type MongoConfig struct {
 	User        string `json:"user,omitempty"`
@@ -66,4 +66,12 @@ func (mc *MongoConfig) GetURI() string {
 	return fmt.Sprintf("mongodb://%s:%s@%s:%d/?maxPoolSize=%d&w=%s", mc.User, mc.Password, mc.Host, mc.Port, mc.MaxPoolSize, mc.W)
 }
 
+type MySQLConfig struct {
+	User     string `json:"user,omitempty"`
+	Password string `json:"password,omitempty"`
+	DBName   string `json:"db_name,omitempty"`
+}
 
+func (mc *MySQLConfig) GetDataSourceName() string {
+	return fmt.Sprintf("%s:%s@/%s?parseTime=true", mc.User, mc.Password, mc.DBName)
+}

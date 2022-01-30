@@ -5,27 +5,27 @@ import (
 	"encoding/json"
 	"errors"
 
-	"git.ymt360.com/usercenter/ymt-ladon/DB"
+	"github.com/azi-v/ladon-api/DB"
 	"github.com/ory/ladon"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type DBManager struct {
+type MongoDBManager struct {
 	DB  *mongo.Client
 	Ctx context.Context
 }
 
-func NewPolicyDBManager(ctx context.Context, db *mongo.Client) *DBManager {
-	return &DBManager{
+func NewPolicyMongoDBManager(ctx context.Context, db *mongo.Client) *MongoDBManager {
+	return &MongoDBManager{
 		DB:  db,
 		Ctx: ctx,
 	}
 }
 
 // Create persists the policy.
-func (m *DBManager) Create(policy ladon.Policy) error {
+func (m *MongoDBManager) Create(policy ladon.Policy) error {
 	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
 	filter := bson.M{"policy_id": policy.GetID()}
 
@@ -75,7 +75,7 @@ func (m *DBManager) Create(policy ladon.Policy) error {
 }
 
 // Update updates an existing policy.
-func (m *DBManager) Update(policy ladon.Policy) error {
+func (m *MongoDBManager) Update(policy ladon.Policy) error {
 	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
 	filter := bson.M{"policy_id": policy.GetID()}
 
@@ -130,7 +130,7 @@ func (m *DBManager) Update(policy ladon.Policy) error {
 }
 
 // Get retrieves a policy.
-func (m *DBManager) Get(id string) (ladon.Policy, error) {
+func (m *MongoDBManager) Get(id string) (ladon.Policy, error) {
 	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
 	filter := bson.M{"policy_id": id} //TODO: policy_id增加唯一索引
 
@@ -140,7 +140,7 @@ func (m *DBManager) Get(id string) (ladon.Policy, error) {
 }
 
 // Delete removes a policy.
-func (m *DBManager) Delete(id string) error {
+func (m *MongoDBManager) Delete(id string) error {
 	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
 	filter := bson.M{"policy_id": id}
 
@@ -171,7 +171,7 @@ func (m *DBManager) Delete(id string) error {
 }
 
 // GetAll retrieves all policies.
-func (m *DBManager) GetAll(limit, offset int64) (ladon.Policies, error) {
+func (m *MongoDBManager) GetAll(limit, offset int64) (ladon.Policies, error) {
 	coll := m.DB.Database("ymt-usercenter").Collection("ymt-ladon-policies")
 	opts := options.Find().SetLimit(limit).SetSkip(offset).SetSort(bson.D{{Key: "_id", Value: -1}})
 	cursor, err := coll.Find(m.Ctx, bson.D{}, opts)
@@ -195,7 +195,7 @@ func (m *DBManager) GetAll(limit, offset int64) (ladon.Policies, error) {
 // FindRequestCandidates returns candidates that could match the request object. It either returns
 // a set that exactly matches the request, or a superset of it. If an error occurs, it returns nil and
 // the error.
-func (m *DBManager) FindRequestCandidates(r *ladon.Request) (ladon.Policies, error) {
+func (m *MongoDBManager) FindRequestCandidates(r *ladon.Request) (ladon.Policies, error) {
 	policies := ladon.Policies{}
 
 	filter := bson.D{
@@ -262,7 +262,7 @@ func (m *DBManager) FindRequestCandidates(r *ladon.Request) (ladon.Policies, err
 // FindPoliciesForSubject returns policies that could match the subject. It either returns
 // a set of policies that applies to the subject, or a superset of it.
 // If an error occurs, it returns nil and the error.
-func (m *DBManager) FindPoliciesForSubject(subject string) (ladon.Policies, error) {
+func (m *MongoDBManager) FindPoliciesForSubject(subject string) (ladon.Policies, error) {
 	filter := bson.D{
 		{Key: "subject", Value: subject},
 	}
@@ -300,7 +300,7 @@ func (m *DBManager) FindPoliciesForSubject(subject string) (ladon.Policies, erro
 // FindPoliciesForResource returns policies that could match the resource. It either returns
 // a set of policies that apply to the resource, or a superset of it.
 // If an error occurs, it returns nil and the error.
-func (m *DBManager) FindPoliciesForResource(resource string) (ladon.Policies, error) {
+func (m *MongoDBManager) FindPoliciesForResource(resource string) (ladon.Policies, error) {
 
 	filter := bson.D{
 		{Key: "resource", Value: resource},

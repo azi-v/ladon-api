@@ -10,14 +10,15 @@ import (
 	"syscall"
 	"time"
 
-	"git.ymt360.com/usercenter/ymt-ladon/api"
+	"github.com/azi-v/ladon-api/api"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// TODO: 增加优雅退出等配置
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Logger(),gin.Recovery())
+	
 	r.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "OK"}) })
 	api.HTTPRouter(r)
 	pprof.Register(r)

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.ymt360.com/usercenter/ymt-ladon/handler"
+	"github.com/azi-v/ladon-api/handler"
 	"github.com/gin-gonic/gin"
 )
 

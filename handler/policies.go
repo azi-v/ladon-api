@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"git.ymt360.com/usercenter/ymt-ladon/domain"
-	"git.ymt360.com/usercenter/ymt-ladon/log"
+	"github.com/azi-v/ladon-api/domain"
+	"github.com/azi-v/ladon-api/log"
 	"github.com/gin-gonic/gin"
 	"github.com/ory/ladon"
 )

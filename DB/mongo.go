@@ -35,5 +35,5 @@ type CollResources struct {
 type CollSubject struct {
 	ID       string `bson:"id,omitempty"`
 	PolicyID string `bson:"policy_id,omitempty"`
-	Subject string `bson:"subject,omitempty"`
+	Subject  string `bson:"subject,omitempty"`
 }

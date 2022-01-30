@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"git.ymt360.com/usercenter/ymt-ladon/config"
+	"github.com/azi-v/ladon-api/config"
 	"github.com/go-redis/redis/v8"
 )
 
